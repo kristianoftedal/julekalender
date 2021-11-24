@@ -1,6 +1,6 @@
 # Julekalender-appen
 
-.NET Core 2.0 med Razor Pages og EF Core.
+.NET 6.0 med Razor Pages og EF Core.
 
 **Bruker følgende Connection string:**<br>
 DefaultConnection

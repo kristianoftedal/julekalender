@@ -1,27 +1,24 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using ChristmasCalendar.Data;
-using System;
+using ChristmasCalendar.Domain;
+using ChristmasCalendar.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ChristmasCalendar.Extensions;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ChristmasCalendar.Pages.Doors
 {
     public class TodayModel : PageModel
     {
-        public Door Door { get; set; } //Support multiple doors for one day
+        public Door? Door { get; set; } //Support multiple doors for one day
 
         public DateTime TimeWhenDoorWasOpened { get; set; }
 
         [BindProperty]
-        public AnswerViewModel AnswerInput { get; set; }
+        public AnswerViewModel AnswerInput { get; set; } = null!;
 
         public IList<RegisteredAnswerViewModel> RegisteredAnswers { get; set; }
 
-        public string ReturnUrl { get; set; }
+        public string? ReturnUrl { get; set; }
 
         private readonly IDatabaseQueries _databaseQueries;
 
@@ -48,8 +45,8 @@ namespace ChristmasCalendar.Pages.Doors
             if (Door == null)
                 return;
 
-            FirstTimeOpeningDoor firstTimeOpeningDoor = await _databaseQueries.GetFirstTimeOpeningDoor(userId, Door.Id);
-            
+            var firstTimeOpeningDoor = await _databaseQueries.GetFirstTimeOpeningDoor(userId, Door.Id);
+
             if (firstTimeOpeningDoor == null)
             {
                 await _databasePersister.RegisterFirstTimeOpeningDoor(userId, Door);
@@ -66,12 +63,12 @@ namespace ChristmasCalendar.Pages.Doors
             }
         }
 
-        public async Task<IActionResult> OnPostRegisterAnswerAsync(string returnUrl = null)
+        public async Task<IActionResult> OnPostRegisterAnswerAsync(string? returnUrl = null)
         {
             if (!ModelState.IsValid)
                 return Page();
 
-            await _databasePersister.RegisterAnswer(_userManager.GetUserId(HttpContext.User), AnswerInput.Location, AnswerInput.Country, DateTime.Now);
+            await _databasePersister.RegisterAnswer(_userManager.GetUserId(HttpContext.User), AnswerInput!.DoorId, AnswerInput!.Location, AnswerInput!.Country);
 
             return LocalRedirect(Url.GetLocalUrl(returnUrl));
         }

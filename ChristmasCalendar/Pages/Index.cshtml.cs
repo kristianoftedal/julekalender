@@ -1,13 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ChristmasCalendar.Data;
+using ChristmasCalendar.Domain;
+using ChristmasCalendar.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using ChristmasCalendar.Data;
-using System;
-using ChristmasCalendar.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ChristmasCalendar.Pages
 {
@@ -26,15 +23,15 @@ namespace ChristmasCalendar.Pages
             _userManager = userManager;
         }
 
-        public Door TodaysDoor { get; set; }
+        public Door? TodaysDoor { get; set; }
 
-        public Door NextDoor { get; set; }
+        public Door? NextDoor { get; set; }
 
-        public IList<AuthenticationScheme> ExternalLogins { get; set; }
+        public IList<AuthenticationScheme> ExternalLogins { get; set; } = null!;
 
-        public string ReturnUrl { get; set; }
+        public string? ReturnUrl { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(string returnUrl = null)
+        public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
         {
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
@@ -56,6 +53,6 @@ namespace ChristmasCalendar.Pages
                 return LocalRedirect(Url.GetLocalUrl("/Doors/Today"));
 
             return Page();
-        }       
+        }
     }
 }

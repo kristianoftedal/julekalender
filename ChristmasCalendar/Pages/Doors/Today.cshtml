@@ -1,4 +1,5 @@
 ﻿@page
+@using ChristmasCalendar.Domain
 @model TodayModel
 @inject SignInManager<ApplicationUser> SignInManager
 
@@ -46,7 +47,7 @@
                             <div>
                                 @if (@Model.Door.PointsForLocation.HasValue)
                                 {
-                                    <small>Denne luken gir: @Model.Door.PointsForLocation poeng for sted, og @Model.Door.PointsForCountry poeng for fylke.</small>
+                                    <small>Denne luken gir: @Model.Door.PointsForLocation poeng for sted, og @Model.Door.PointsForCountry poeng for land.</small>
                                 }
                             </div>
                         </li>
@@ -71,11 +72,12 @@
                                     @:Sted
                                 }
                             </label>
+                            <input type="hidden" asp-for="AnswerInput.DoorId" value="@Model.Door.Id" />
                             <input asp-for="AnswerInput.Location" autocomplete="off" class="form-control" />
                             <span asp-validation-for="AnswerInput.Location" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label>Fylke</label>
+                            <label>Land</label>
                             <input asp-for="AnswerInput.Country" autocomplete="off" class="form-control" />
                             <span asp-validation-for="AnswerInput.Country" class="text-danger"></span>
                         </div>
@@ -99,12 +101,12 @@
                                 <tr>
                                     <th>Klokkeslett</th>
                                     <th>Sted</th>
-                                    <th>Fylke</th>
+                                    <th>Land</th>
                                 </tr>
                             </thead>
                             <tbody style="font-size: 12px;">
                                 @foreach (var answer in Model.RegisteredAnswers)
-                                {
+                                {                                    
                                     <tr>
                                         <td>@answer.When.ToString("HH:mm")</td>
                                         <td>@answer.Location</td>

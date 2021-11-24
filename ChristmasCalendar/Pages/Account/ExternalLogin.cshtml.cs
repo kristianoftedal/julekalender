@@ -1,13 +1,10 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using ChristmasCalendar.Domain;
+using ChristmasCalendar.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
-using ChristmasCalendar.Data;
-using ChristmasCalendar.Extensions;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace ChristmasCalendar.Pages.Account
 {
@@ -15,7 +12,7 @@ namespace ChristmasCalendar.Pages.Account
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ILogger<ExternalLoginModel> _logger;        
+        private readonly ILogger<ExternalLoginModel> _logger;
 
         public ExternalLoginModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ILogger<ExternalLoginModel> logger)
         {
@@ -25,20 +22,20 @@ namespace ChristmasCalendar.Pages.Account
         }
 
         [BindProperty]
-        public InputModel Input { get; set; }
+        public InputModel? Input { get; set; }
 
-        public string LoginProvider { get; set; }
+        public string? LoginProvider { get; set; }
 
-        public string ReturnUrl { get; set; }
+        public string? ReturnUrl { get; set; }
 
         [TempData]
-        public string ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; }
 
         public class InputModel
         {
             [Required]
             [EmailAddress]
-            public string Email { get; set; }
+            public string Email { get; set; } = null!;
         }
 
         public IActionResult OnGetAsync()
@@ -46,7 +43,7 @@ namespace ChristmasCalendar.Pages.Account
             return RedirectToPage("/");
         }
 
-        public IActionResult OnPost(string provider, string returnUrl = null)
+        public IActionResult OnPost(string provider, string? returnUrl = null)
         {
             // Request a redirect to the external login provider.
             var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
@@ -55,7 +52,7 @@ namespace ChristmasCalendar.Pages.Account
             return new ChallengeResult(provider, properties);
         }
 
-        public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
+        public async Task<IActionResult> OnGetCallbackAsync(string? returnUrl = null, string? remoteError = null)
         {
             if (remoteError != null)
             {
@@ -73,7 +70,7 @@ namespace ChristmasCalendar.Pages.Account
 
             if (result.Succeeded)
             {
-                _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
+                _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity!.Name, info.LoginProvider);
 
                 return LocalRedirect(Url.GetLocalUrl(returnUrl));
             }
@@ -95,18 +92,19 @@ namespace ChristmasCalendar.Pages.Account
             return Page();
         }
 
-        public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
+        public async Task<IActionResult> OnPostConfirmationAsync(string? returnUrl = null)
         {
             if (ModelState.IsValid)
             {
                 // Get the information about the user from the external login provider
-                ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
+                var info = await _signInManager.GetExternalLoginInfoAsync();
 
                 if (info == null)
                     throw new ApplicationException("Error loading external login information during confirmation.");
 
-                var user = new ApplicationUser {
-                    UserName = Input.Email,
+                var user = new ApplicationUser
+                {
+                    UserName = Input!.Email,
                     Email = Input.Email,
                     FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
                     LastName = info.Principal.FindFirstValue(ClaimTypes.Surname),

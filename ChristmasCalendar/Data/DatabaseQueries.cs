@@ -1,12 +1,22 @@
-﻿using ChristmasCalendar.Pages.Highscore;
+﻿using ChristmasCalendar.Domain;
+using ChristmasCalendar.Pages.Highscore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ChristmasCalendar.Data
 {
+    public interface IDatabaseQueries
+    {
+        Task<List<Door>> GetHistoricDoors(DateTime now);
+        Task<List<HighscoreViewModel>> GetScores(int year);
+        Task<Door?> GetTodaysDoor(DateTime today);
+        Task<Door?> GetNextDoor(DateTime today);
+        Task<List<Answer>> GetRegisteredAnswersForDoor(string userId, int doorId);
+        Task<bool> HasOpenedDoor(string userId, int doorId);
+        Task<FirstTimeOpeningDoor?> GetFirstTimeOpeningDoor(string userId, int doorId);
+        Task<DateTime> GetWhenScoreWasLastUpdated();
+        Task<List<HighscoreViewModel>> GetScoresSortedByTime(int year);
+    }
+
     public class DatabaseQueries : IDatabaseQueries
     {
         private readonly ApplicationDbContext _context;
@@ -46,7 +56,7 @@ namespace ChristmasCalendar.Data
                     PointsLastDoor = x.Where(y => y.DoorNumber == doorNumber).Sum(y => y.Points),
                     Rank = x.OrderByDescending(y => y.DoorNumber).First().Rank,
                     Bonus = x.Sum(y => y.Bonus),
-                    AverageSecondsSpentPerCorrectDoor = (int)x.Where(y => y.Points == 2).DefaultIfEmpty().Average(y => y.TimeToAnswer)
+                    AverageSecondsSpentPerCorrectDoor = (int)x.Where(y => y.Points == 2).DefaultIfEmpty().Average(y => y!.TimeToAnswer)
                 })
                 .OrderByDescending(x => x.PointsTotal)
                 .ThenBy(x => x.NameOfUser)
@@ -66,8 +76,8 @@ namespace ChristmasCalendar.Data
                     PointsLastDoor = x.Where(y => y.DoorNumber == doorNumberLastDoor).Sum(y => y.Points),
                     Rank = x.OrderByDescending(y => y.DoorNumber).First().Rank,
                     Bonus = x.Sum(y => y.Bonus),
-                    TotalTimeToAnswer = (int)x.DefaultIfEmpty().Sum(y => y.TimeToAnswer),
-                    AverageSecondsSpentPerCorrectDoor = (int)x.DefaultIfEmpty().Average(y => y.TimeToAnswer)
+                    TotalTimeToAnswer = (int)x.DefaultIfEmpty().Sum(y => y!.TimeToAnswer),
+                    AverageSecondsSpentPerCorrectDoor = (int)x.DefaultIfEmpty().Average(y => y!.TimeToAnswer)
                 })
                 .Where(x => x.PointsTotal > doorNumberLastDoor)
                 .OrderByDescending(x => x.PointsTotal)
@@ -77,12 +87,12 @@ namespace ChristmasCalendar.Data
                 .ToListAsync();
         }
 
-        public Task<Door> GetTodaysDoor(DateTime today)
+        public Task<Door?> GetTodaysDoor(DateTime today)
         {
             return _context.Doors.SingleOrDefaultAsync(x => x.ForDate == today);
         }
 
-        public Task<Door> GetNextDoor(DateTime today)
+        public Task<Door?> GetNextDoor(DateTime today)
         {
             return _context.Doors
                 .Where(x => x.ForDate > today)
@@ -96,7 +106,7 @@ namespace ChristmasCalendar.Data
             return _context.FirstTimeOpeningDoor.AnyAsync(x => x.UserId == userId && x.DoorId == doorId);
         }
 
-        public Task<FirstTimeOpeningDoor> GetFirstTimeOpeningDoor(string userId, int doorId)
+        public Task<FirstTimeOpeningDoor?> GetFirstTimeOpeningDoor(string userId, int doorId)
         {
             return _context.FirstTimeOpeningDoor.SingleOrDefaultAsync(x => x.UserId == userId && x.DoorId == doorId);
         }

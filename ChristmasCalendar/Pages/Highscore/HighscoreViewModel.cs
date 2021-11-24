@@ -2,7 +2,7 @@
 {
     public class HighscoreViewModel
     {
-        public string NameOfUser { get; set; }
+        public string? NameOfUser { get; set; }
 
         public int Rank { get; set; }
 
@@ -17,7 +17,9 @@
         public int TotalPoints => Points + Bonus;
 
         public int AverageSecondsSpentPerCorrectDoor { get; set; }
+
         public int PointsLastDoor { get; set; }
+
         public int PointsTotal { get; set; }
     }
 }

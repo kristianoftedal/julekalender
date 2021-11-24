@@ -39,6 +39,7 @@ body {
     font-size: xx-large;
     font-weight: bold;
 }
+
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
     display: none !important;
 }
@@ -51,9 +52,9 @@ body {
     zoom: 1; /* hasLayout ie7 trigger */
 }
 
-.nav-pills > li + li {
-    margin-left: 16px;
-}
+    .nav-pills > li + li {
+        margin-left: 16px;
+    }
 
 .nav-tabs, .nav-pills {
     text-align: center;
@@ -87,6 +88,6 @@ body {
     float: left;
 }
 
-.nav > li > a:hover {
-    border-color: transparent
-}    
+    .nav > li > a:hover {
+        border-color: transparent
+    }

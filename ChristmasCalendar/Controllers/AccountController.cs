@@ -1,8 +1,6 @@
-using System.Threading.Tasks;
+﻿using ChristmasCalendar.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using ChristmasCalendar.Data;
 
 namespace ChristmasCalendar.Controllers
 {
@@ -23,8 +21,6 @@ namespace ChristmasCalendar.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-
-            _logger.LogInformation("User logged out.");
 
             return RedirectToPage("/Index");
         }

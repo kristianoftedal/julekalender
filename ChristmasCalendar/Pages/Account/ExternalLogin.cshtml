@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model ExternalLoginModel
 @{
     ViewData["Title"] = "Registrer";
@@ -27,8 +27,8 @@
                     <div asp-validation-summary="All" class="text-danger"></div>
                     <div class="form-group">
                         <label>Epost</label>
-                        <input asp-for="Input.Email" class="form-control" autocomplete="off" />
-                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        <input asp-for="Input!.Email" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="Input!.Email" class="text-danger"></span>
                     </div>
                     <button type="submit" class="btn btn-default">Register</button>
                 </form>
