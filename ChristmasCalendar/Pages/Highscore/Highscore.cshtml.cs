@@ -18,26 +18,11 @@ namespace ChristmasCalendar.Pages.Highscore
 
         public async Task OnGetAsync()
         {
-            var scores = await _databaseQueries.GetScores(DateTime.Now.Year);
-
-            int currentRank = 0;
-            int prevPoints = -1;
-
-            for (int i = 0; i < scores.Count; i++)
-            {
-                if (scores[i].PointsTotal != prevPoints)
-                {
-                    currentRank = i + 1;
-                    prevPoints = scores[i].PointsTotal;
-                }
-                scores[i].Rank = currentRank;
-            }
-
-            Scores = scores;
+            Scores = await _databaseQueries.GetScores(DateTime.Now.Year);
 
             var lastUpdated = (await _databaseQueries.GetWhenScoreWasLastUpdated());
 
-            LastUpdated = lastUpdated != DateTime.MinValue ? lastUpdated : (DateTime?)null;
+            LastUpdated = lastUpdated != DateTime.MinValue ? lastUpdated : null;
         }
     }
 }
