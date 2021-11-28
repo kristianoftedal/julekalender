@@ -113,7 +113,8 @@ namespace ChristmasCalendar.Pages.Account
                     Name = info.Principal.FindFirstValue(ClaimTypes.Name),
                     DateOfBirth = info.Principal.FindFirstValue(ClaimTypes.DateOfBirth),
                     EmailAddressFromAuthProvider = info.Principal.FindFirstValue(ClaimTypes.Email),
-                    WantsDailyNotification = Input.WantsDailyNotification
+                    WantsDailyNotification = Input.WantsDailyNotification,
+                    EmailConfirmed = true // Note 2021-11-28: Social identity provider requires that email is confirmed from user. Ref: https://stackoverflow.com/questions/41598437/signinmanagerexternalloginsigninasync-returns-isnotallowed-for-social-login
                 };
 
                 var result = await _userManager.CreateAsync(user);
