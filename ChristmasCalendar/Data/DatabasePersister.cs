@@ -1,9 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ChristmasCalendar.Domain;
 
 namespace ChristmasCalendar.Data
 {
+    public interface IDatabasePersister
+    {
+        Task RegisterFirstTimeOpeningDoor(string userId, Door doorForToday);
+        Task RegisterAnswer(string userId, int doorId, string? location, string? country);
+    }
+
     public class DatabasePersister : IDatabasePersister
     {
         private readonly ApplicationDbContext _context;
@@ -13,16 +17,16 @@ namespace ChristmasCalendar.Data
             _context = context;
         }
 
-        public async Task RegisterAnswer(string userId, string location, string country, DateTime now)
+        public async Task RegisterAnswer(string userId, int doorId, string? location, string? country)
         {
-            _context.Answers.Add(Answer.Create(userId, _context.Doors.Single(x => x.ForDate == now.Date).Id, location, country, now));
+            _context.Answers.Add(Answer.Create(userId, doorId, location, country));
 
             await _context.SaveChangesAsync();
         }
 
         public async Task RegisterFirstTimeOpeningDoor(string userId, Door door)
         {
-            _context.FirstTimeOpeningDoor.Add(FirstTimeOpeningDoor.Create(userId, door.Id));
+            _context.FirstTimeOpeningDoor.Add(FirstTimeOpeningDoor.Register(userId, door.Id));
 
             await _context.SaveChangesAsync();
         }

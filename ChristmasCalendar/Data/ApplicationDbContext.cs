@@ -1,3 +1,4 @@
+﻿using ChristmasCalendar.Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,24 +11,24 @@ namespace ChristmasCalendar.Data
         {
         }
 
-        public DbSet<DailyScore> DailyScore { get; set; }
-        public DbSet<Door> Doors { get; set; }
-        public DbSet<Answer> Answers { get; set; }
-        public DbSet<FirstTimeOpeningDoor> FirstTimeOpeningDoor { get; set; }
-        public DbSet<DailyScoreLastUpdated> DailyScoreLastUpdated { get; set; }
+        public DbSet<DailyScore> DailyScore { get; set; } = null!;
+        public DbSet<Door> Doors { get; set; } = null!;
+        public DbSet<Answer> Answers { get; set; } = null!;
+        public DbSet<FirstTimeOpeningDoor> FirstTimeOpeningDoor { get; set; } = null!;
+        public DbSet<DailyScoreLastUpdated> DailyScoreLastUpdated { get; set; } = null!;
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<DailyScore>().ToTable("DailyScore");
-            builder.Entity<Door>().ToTable("Door");
-            builder.Entity<Answer>().ToTable("Answer");
-            builder.Entity<FirstTimeOpeningDoor>().ToTable("FirstTimeOpeningDoor");
-            builder.Entity<DailyScoreLastUpdated>().ToTable("DailyScoreLastUpdated");
+            builder.Entity<DailyScore>().ToTable(nameof(DailyScore));
+            builder.Entity<Door>().ToTable(nameof(Door));
+            builder.Entity<Answer>().ToTable(nameof(Answer));
+            builder.Entity<FirstTimeOpeningDoor>().ToTable(nameof(FirstTimeOpeningDoor));
+            builder.Entity<DailyScoreLastUpdated>().ToTable(nameof(DailyScoreLastUpdated));
 
             builder.Entity<DailyScore>()
                 .HasIndex(u => new { u.DoorId, u.UserId })
-                .IsUnique()
-                .HasName("UQ_UniqueUserEntryPerDoor");
+                .IsUnique();
 
             base.OnModelCreating(builder);
         }

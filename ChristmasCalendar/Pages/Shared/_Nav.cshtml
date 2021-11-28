@@ -1,0 +1,18 @@
+﻿@using ChristmasCalendar.Domain
+@inject SignInManager<ApplicationUser> _signInManager
+
+<row>
+    <div class="col-lg-10 col-lg-offset-1">
+        <a asp-page="/Index"><img src="~/images/NN_Logo_Liten_RGB.svg" alt="novanet-logo" width="100" /></a>
+        <div class="nav-links pull-right">
+            @if (_signInManager.IsSignedIn(User))
+            {
+                <a class="nav-links current-page" asp-page="/Doors/Today">Dagens</a>
+            }
+            <a class="nav-links current-page" asp-page="/Doors/PreviousDoor">Tidligere luker</a>
+            <a class="nav-links current-page" asp-page="/Highscore/Highscore">Highscore</a>
+        </div>
+        <br />
+        <br />
+    </div>
+</row>

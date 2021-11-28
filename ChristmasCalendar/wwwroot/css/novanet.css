@@ -74,7 +74,7 @@ span.box-big {
     font-size: 14px;
 }
 
-@media only screen and (min-width : 992)  {
+@media only screen and (min-width : 992) {
     .col-container {
         display: table; /* Make the container element behave like a table */
         width: 100%; /* Set full-width to expand the whole page */
@@ -93,6 +93,7 @@ span.box-big {
     .box-middle {
         width: 100%;
     }
+
     .col {
         display: block;
     }

@@ -1,13 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ChristmasCalendar.Pages.Doors
+﻿namespace ChristmasCalendar.Pages.Doors
 {
     public class AnswerViewModel
     {
-        [MaxLength(100)]
-        public string Location { get; set; }
+        public int DoorId { get; set; }
 
-        [MaxLength(100)]
-        public string Country { get; set; }
+        public string? Location { get; set; }
+
+        public string? Country { get; set; }        
     }
 }

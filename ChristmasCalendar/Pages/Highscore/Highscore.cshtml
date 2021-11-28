@@ -1,20 +1,6 @@
 ﻿@page
 @model HighscoreModel
-@inject SignInManager<ApplicationUser> SignInManager
-<row>
-    <div class="col-lg-10 col-lg-offset-1">
-        <a asp-page="/Index"><img src="~/images/NN_Logo_Liten_RGB.svg" alt="novanet-logo" width="100" /></a>
-        <div class="nav-links pull-right">
-            @if (SignInManager.IsSignedIn(User))
-            {
-                <a class="nav-links" asp-page="/Doors/Today">Dagens</a>
-            }
-            <a class="nav-links current-page" asp-page="/Highscore/Highscore">Poeng</a><a class="nav-links" asp-page="/Doors/PreviousDoors">Tidligere luker</a>
-        </div>
-        <br/>
-        <br/>
-    </div>
-</row>
+
 <row>
     <div class="col-lg-10 col-lg-offset-1 text-center box-grey">
         <h1><strong>Poeng</strong></h1>
@@ -52,8 +38,8 @@
                             <td style="text-align:left;">@score.Rank</td>
                             <td style="text-align:left;">@score.NameOfUser</td>
                             @*<td style="text-align:center;">@score.AverageSecondsSpentPerCorrectDoor</td>*@
-                            <td class="hidden-xs" style="text-align:center;">@score.PointsLastDoor</td>
-                            <td class="hidden-xs" style="text-align:center;">@score.PointsTotal</td>
+                            <td style="text-align:center;">@score.PointsLastDoor</td>
+                            <td style="text-align:center;">@score.PointsTotal</td>
                             @*<td class="hidden-xs" style="text-align:center;">@score.Bonus</td>*@
                             @*<td style="text-align:center;"><strong>@score.TotalPoints</strong></td>*@
                         </tr>

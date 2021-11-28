@@ -1,19 +1,33 @@
-﻿using ChristmasCalendar.Pages.Highscore;
+﻿using ChristmasCalendar.Data.Dapper;
+using ChristmasCalendar.Domain;
+using ChristmasCalendar.Pages.Highscore;
+using Dapper;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ChristmasCalendar.Data
 {
+    public interface IDatabaseQueries
+    {
+        Task<List<Door>> GetHistoricDoors(DateTime now);
+        Task<List<HighscoreViewModel>> GetScores(int year);
+        Task<Door?> GetTodaysDoor(DateTime today);
+        Task<Door?> GetNextDoor(DateTime today);
+        Task<List<Answer>> GetRegisteredAnswersForDoor(string userId, int doorId);
+        Task<bool> HasOpenedDoor(string userId, int doorId);
+        Task<FirstTimeOpeningDoor?> GetFirstTimeOpeningDoor(string userId, int doorId);
+        Task<DateTime> GetWhenScoreWasLastUpdated();
+        Task<List<HighscoreViewModel>> GetScoresSortedByTime(int year);
+    }
+
     public class DatabaseQueries : IDatabaseQueries
     {
         private readonly ApplicationDbContext _context;
+        private readonly DbConnectionFactory _dbConnectionFactory;
 
-        public DatabaseQueries(ApplicationDbContext context)
+        public DatabaseQueries(ApplicationDbContext context, DbConnectionFactory dbConnectionFactory)
         {
             _context = context;
+            _dbConnectionFactory = dbConnectionFactory;
         }
 
         public Task<List<Door>> GetHistoricDoors(DateTime now)
@@ -32,32 +46,74 @@ namespace ChristmasCalendar.Data
                 .ToListAsync();
         }
 
-        public Task<List<HighscoreViewModel>> GetScores(int year)
+        public async Task<List<HighscoreViewModel>> GetScores(int year)
         {
-            return _context.DailyScore
-                .Where(x => x.Year == year)
-                .GroupBy(x => new { x.UserId, x.NameOfUser })
-                .Select(x => new HighscoreViewModel
-                {
-                    NameOfUser = x.Key.NameOfUser,
-                    PointsTotal = x.Sum(y => y.Points),
-                    PointsLastDoor = x.OrderByDescending(y => y.DoorNumber).First().Points,
-                    Rank = x.OrderByDescending(y => y.DoorNumber).First().Rank,
-                    Bonus = x.Sum(y => y.Bonus),
-                    AverageSecondsSpentPerCorrectDoor = (int)x.Where(y => y.Points == 2).DefaultIfEmpty().Average(y => y.TimeToAnswer)
-                })
-                .OrderBy(x => x.Rank)
-                .ThenByDescending(x => x.Points)
-                .ThenBy(x => x.NameOfUser)
-                .ToListAsync();
+            using var connection = _dbConnectionFactory.Connection;
+
+            var sql = @"
+                DECLARE @doorNumberForLastDoor INT
+                SELECT @doorNumberForLastDoor = ISNULL(MAX(y.[DoorNumber]), 0) FROM [dbo].[DailyScore] y (NOLOCK) WHERE y.[Year] = 2021
+
+                SELECT 
+	                [NameOfUser],
+	                SUM((CASE WHEN ds.DoorId = @doorNumberForLastDoor THEN ds.[Rank] ELSE 0 END)) as [Rank],
+	                SUM(ds.[Bonus]) as [Bonus],
+	                0 as [NumberOfCorrectDoors],--NA
+	                SUM(ds.[TimeToAnswer]) as [TotalTimeToAnswer],
+	                AVG(ds.[TimeToAnswer]) as [AverageSecondsSpentPerCorrectDoor],
+	                SUM((CASE WHEN ds.DoorId = @doorNumberForLastDoor THEN ds.[Points] ELSE 0 END)) as [PointsLastDoor],
+	                SUM(ds.[Points]) as [PointsTotal]
+                FROM 
+	                [dbo].[DailyScore] ds (NOLOCK)
+                WHERE
+	                ds.[Year] = @year
+                GROUP BY
+	                ds.[UserId], ds.[NameOfUser]
+                ORDER BY
+	                [PointsTotal] DESC, 
+	                [NameOfUser] ASC";
+
+            return (await connection.QueryAsync<HighscoreViewModel>(sql, new { year })).ToList();
         }
 
-        public Task<Door> GetTodaysDoor(DateTime today)
+        public async Task<List<HighscoreViewModel>> GetScoresSortedByTime(int year)
+        {
+            using var connection = _dbConnectionFactory.Connection;
+
+            var sql = @"
+                DECLARE @doorNumberForLastDoor INT
+                SELECT @doorNumberForLastDoor = ISNULL(MAX(y.[DoorNumber]), 0) FROM [dbo].[DailyScore] y (NOLOCK) WHERE y.[Year] = @year
+
+                SELECT 
+	                [NameOfUser],
+	                1 as [Rank],
+	                SUM(ds.[Bonus]) as [Bonus],
+	                0 as [NumberOfCorrectDoors],
+	                SUM(ds.[TimeToAnswer]) as [TotalTimeToAnswer],
+	                AVG(ds.[TimeToAnswer]) as [AverageSecondsSpentPerCorrectDoor],
+	                SUM((CASE WHEN ds.DoorId = @doorNumberForLastDoor THEN ds.[Points] ELSE 0 END)) as [PointsLastDoor],
+	                SUM(ds.[Points]) as [PointsTotal]
+                FROM 
+	                [dbo].[DailyScore] ds (NOLOCK)
+                WHERE
+	                ds.[Year] = @year
+                GROUP BY
+	                ds.[UserId], ds.[NameOfUser]
+                ORDER BY
+	                [PointsTotal] DESC, 
+	                [TotalTimeToAnswer] ASC,
+	                [AverageSecondsSpentPerCorrectDoor] ASC,
+	                [NameOfUser] ASC";
+
+            return (await connection.QueryAsync<HighscoreViewModel>(sql, new { year })).ToList();
+        }
+
+        public Task<Door?> GetTodaysDoor(DateTime today)
         {
             return _context.Doors.SingleOrDefaultAsync(x => x.ForDate == today);
         }
 
-        public Task<Door> GetNextDoor(DateTime today)
+        public Task<Door?> GetNextDoor(DateTime today)
         {
             return _context.Doors
                 .Where(x => x.ForDate > today)
@@ -71,7 +127,7 @@ namespace ChristmasCalendar.Data
             return _context.FirstTimeOpeningDoor.AnyAsync(x => x.UserId == userId && x.DoorId == doorId);
         }
 
-        public Task<FirstTimeOpeningDoor> GetFirstTimeOpeningDoor(string userId, int doorId)
+        public Task<FirstTimeOpeningDoor?> GetFirstTimeOpeningDoor(string userId, int doorId)
         {
             return _context.FirstTimeOpeningDoor.SingleOrDefaultAsync(x => x.UserId == userId && x.DoorId == doorId);
         }

@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model ExternalLoginModel
 @{
     ViewData["Title"] = "Registrer";
@@ -6,19 +6,16 @@
 
 
 <row>
+    <div class="col-lg-10 col-lg-offset-1 text-center box-grey">
+        <h1><strong>Registrer deg</strong></h1>
+    </div>
     <div class="col-lg-10 col-lg-offset-1">
-        <h2>
-            <strong>
-                Registrer deg til Novanet Julekalender
-            </strong>
-        </h2>
-        <hr />
-
+        <br/>
         <p class="text-info">
-            Du er autentisert med <strong>@Model.LoginProvider</strong>.<br /><br />
-            Julekalenderen vil bruke navnet ditt fra @Model.LoginProvider for visning av poeng.<br />
-            Novanet vil bruke epostadressen din til å sende ut informasjon om julekalenderen.<br /><br />
-            Vennligst registrer epost.
+            Du er autentisert med <strong>@Model.LoginProvider</strong>.<br/><br/>
+            Julekalenderen vil bruke navnet ditt fra @Model.LoginProvider for visning av poeng.<br/>
+            Novanet vil bruke e-postadressen din til å sende ut informasjon om julekalenderen.<br/><br/>
+            Vennligst registrer e-post.
         </p>
 
         <div class="row">
@@ -26,10 +23,15 @@
                 <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                     <div asp-validation-summary="All" class="text-danger"></div>
                     <div class="form-group">
-                        <label>Epost</label>
-                        <input asp-for="Input.Email" class="form-control" autocomplete="off" />
-                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        <label>E-post</label>
+                        <input asp-for="Input!.Email" class="form-control" autocomplete="off"/>
+                        <span asp-validation-for="Input!.Email" class="text-danger"></span>
                     </div>
+                    <div class="form-group">
+                        <input id="dailyNotification" asp-for="Input!.WantsDailyNotification"/>
+                        <label style="font-weight: normal;" for="dailyNotification"><small>Jeg vil ha daglig påminnelse på e-post</small></label>
+                    </div>
+                    <br/>
                     <button type="submit" class="btn btn-default">Register</button>
                 </form>
             </div>
