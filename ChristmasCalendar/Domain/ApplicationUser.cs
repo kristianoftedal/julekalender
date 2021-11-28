@@ -20,5 +20,7 @@ namespace ChristmasCalendar.Domain
 
         [MaxLength(300)]
         public string? EmailAddressFromAuthProvider { get; set; }
+
+        public bool WantsDailyNotification { get; set; }
     }
 }

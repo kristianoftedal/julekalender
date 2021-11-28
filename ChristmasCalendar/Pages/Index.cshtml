@@ -1,16 +1,8 @@
 ﻿@page
 @using ChristmasCalendar.Domain
-@inject SignInManager<ApplicationUser> SignInManager
+@inject SignInManager<ApplicationUser> _signInManager
 @model IndexModel
 
-<row>
-    <div class="col-lg-10 col-lg-offset-1">
-        <a href="https://www.novanet.no"><img src="~/images/NN_Logo_Liten_RGB.svg" alt="novanet-logo" width="100" /></a>
-        <div class="nav-links pull-right">
-            <a class="nav-links" asp-page="/Highscore/Highscore">Poeng</a><a class="nav-links" asp-page="/Doors/PreviousDoors">Tidligere luker</a>
-        </div>
-    </div>
-</row>
 <div style="clear:both"></div>
 <row>
     <div class="col-container">
@@ -42,7 +34,7 @@
         <span>Neste luke er @Model.NextDoor.ForDate.Day. des</span>
             }
         }
-        else if (!SignInManager.IsSignedIn(User))
+        else if (!_signInManager.IsSignedIn(User))
         {
         <strong>Logg inn med:</strong><br /><br />
         <form asp-page="./Account/ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
@@ -76,7 +68,7 @@
             <div>
                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 box-middle">
                     <h2 class="text-green"><strong>Hvordan</strong></h2>
-                    Hver luke i kalenderen er et bilde fra et sted i NORGE!<br /><br />
+                    Hver luke i kalenderen er et bilde fra et sted i verden.<br /><br />
                     Du skal svare på hvilket sted og land dette er. Sted kan være by, tettsted, fjell etc.<br /><br />
                     Svaret må leveres dagen luken gjelder for. <br />
                     <br />
@@ -94,7 +86,7 @@
                     Poengene blir oppdatert daglig på poengsiden.
                     <br />
                     <br />
-                    NB! Tidsbruk har ingen påvirkning på poeng denne gang.<br />
+                    NB! Tidsbruk har ingen påvirkning på poeng.<br />
                 </div>
 
                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 box-middle">
@@ -141,5 +133,11 @@
 <row>
     <div class="col-lg-10 col-lg-offset-1 text-center box-grey">
         <h1><strong>Husk!</strong></h1><br /><br />Det er lov å svare flere ganger, det siste innsendte svaret teller.
+    </div>
+</row>
+
+<row>
+    <div class="col-lg-10 col-lg-offset-1">
+        <a asp-page="./Privacy" class="nav-links">Personvern</a>
     </div>
 </row>

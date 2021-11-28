@@ -36,6 +36,8 @@ namespace ChristmasCalendar.Pages.Account
             [Required]
             [EmailAddress]
             public string Email { get; set; } = null!;
+
+            [Required] public bool WantsDailyNotification { get; set; } = false;
         }
 
         public IActionResult OnGetAsync()
@@ -110,7 +112,8 @@ namespace ChristmasCalendar.Pages.Account
                     LastName = info.Principal.FindFirstValue(ClaimTypes.Surname),
                     Name = info.Principal.FindFirstValue(ClaimTypes.Name),
                     DateOfBirth = info.Principal.FindFirstValue(ClaimTypes.DateOfBirth),
-                    EmailAddressFromAuthProvider = info.Principal.FindFirstValue(ClaimTypes.Email)
+                    EmailAddressFromAuthProvider = info.Principal.FindFirstValue(ClaimTypes.Email),
+                    WantsDailyNotification = Input.WantsDailyNotification
                 };
 
                 var result = await _userManager.CreateAsync(user);

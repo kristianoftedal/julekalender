@@ -4,19 +4,17 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ChristmasCalendar.Controllers
 {
-    [Route("[controller]/[action]")]
+    [Route("account")]
     public class AccountController : Controller
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ILogger _logger;
 
-        public AccountController(SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger)
+        public AccountController(SignInManager<ApplicationUser> signInManager)
         {
             _signInManager = signInManager;
-            _logger = logger;
         }
 
-        [HttpPost]
+        [HttpPost("logout")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {

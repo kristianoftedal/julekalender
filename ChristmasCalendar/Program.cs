@@ -38,6 +38,7 @@ builder.Services
 builder.Services.AddRazorPages(o =>
 {
     o.Conventions.AuthorizePage("/Doors/Today");
+    o.Conventions.AuthorizePage("/Account/Manage");
     o.Conventions.AllowAnonymousToPage("/Doors/PreviousDoors");
     o.Conventions.AllowAnonymousToPage("/Highscore/Highscore");
 });
