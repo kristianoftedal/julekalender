@@ -26,7 +26,7 @@ namespace ChristmasCalendar.Data
 
         public async Task RegisterFirstTimeOpeningDoor(string userId, Door door)
         {
-            _context.FirstTimeOpeningDoor.Add(FirstTimeOpeningDoor.Create(userId, door.Id));
+            _context.FirstTimeOpeningDoor.Add(FirstTimeOpeningDoor.Register(userId, door.Id));
 
             await _context.SaveChangesAsync();
         }

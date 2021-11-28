@@ -10,7 +10,7 @@
 
         public DateTime When { get; protected set; }
 
-        public static FirstTimeOpeningDoor Create(string userId, int doorId)
+        public static FirstTimeOpeningDoor Register(string userId, int doorId)
         {
             return new FirstTimeOpeningDoor
             {
