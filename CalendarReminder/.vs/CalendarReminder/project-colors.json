@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "aec52cac-040b-460a-9d45-bee71e65a928": {
+      "ProjectGuid": "aec52cac-040b-460a-9d45-bee71e65a928",
+      "DisplayName": "CalendarReminder",
+      "ColorIndex": 0
+    }
+  },
+  "NextColorIndex": 1
+}
